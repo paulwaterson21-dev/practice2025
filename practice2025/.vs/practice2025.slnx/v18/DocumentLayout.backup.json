@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Projects\\practice2025\\practice2025\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{63717275-611D-4023-8689-796618C4ABD8}|task01tests\\task01tests.csproj|d:\\projects\\practice2025\\practice2025\\task01tests\\stringextensionstests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{63717275-611D-4023-8689-796618C4ABD8}|task01tests\\task01tests.csproj|solutionrelative:task01tests\\stringextensionstests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2A59688D-532C-4DA8-BF74-C79AE2E506E7}|task01\\task01.csproj|d:\\projects\\practice2025\\practice2025\\task01\\stringextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2A59688D-532C-4DA8-BF74-C79AE2E506E7}|task01\\task01.csproj|solutionrelative:task01\\stringextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2A59688D-532C-4DA8-BF74-C79AE2E506E7}|task01\\task01.csproj|d:\\projects\\practice2025\\practice2025\\task01\\task01.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{2A59688D-532C-4DA8-BF74-C79AE2E506E7}|task01\\task01.csproj|solutionrelative:task01\\task01.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "task01",
+              "DocumentMoniker": "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj",
+              "RelativeDocumentMoniker": "task01\\task01.csproj",
+              "ToolTip": "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj",
+              "RelativeToolTip": "task01\\task01.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-25T13:43:48.021Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "StringExtensionsTests.cs",
+              "DocumentMoniker": "D:\\Projects\\practice2025\\practice2025\\task01tests\\StringExtensionsTests.cs",
+              "RelativeDocumentMoniker": "task01tests\\StringExtensionsTests.cs",
+              "ToolTip": "D:\\Projects\\practice2025\\practice2025\\task01tests\\StringExtensionsTests.cs*",
+              "RelativeToolTip": "task01tests\\StringExtensionsTests.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T13:43:18Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "StringExtensions.cs",
+              "DocumentMoniker": "D:\\Projects\\practice2025\\practice2025\\task01\\StringExtensions.cs",
+              "RelativeDocumentMoniker": "task01\\StringExtensions.cs",
+              "ToolTip": "D:\\Projects\\practice2025\\practice2025\\task01\\StringExtensions.cs*",
+              "RelativeToolTip": "task01\\StringExtensions.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T13:42:19.272Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
