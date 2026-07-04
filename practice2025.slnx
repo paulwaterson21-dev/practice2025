@@ -12,4 +12,5 @@
   <Project Path="task07/task07.csproj" Id="012c2b85-3b89-41ab-b2c3-0b7a87cc4b6f" />
   <Project Path="task07tests/task07tests.csproj" Id="70016424-4212-40f3-aaae-4d0c92211c6c" />
   <Project Path="task08tests/task08tests.csproj" Id="3cef4061-f9dc-4707-bf84-3df2370c2957" />
+  <Project Path="task09/task09.csproj" Id="8c0a2cc2-5566-45d4-9377-9184bc13bde5" />
 </Solution>
