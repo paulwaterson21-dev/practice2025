@@ -1,0 +1,17 @@
+<Solution>
+  <Project Path="CommandRunner/CommandRunner.csproj" Id="5fd4ed91-ed9d-4967-857f-13362c06d51a" />
+  <Project Path="FileSystemCommands/task08.csproj" Id="9578b7b4-a00c-4e10-ad9e-a6468b64e3f9" />
+  <Project Path="task02/task02.csproj" Id="19b0525f-4c9e-4bd3-bfc8-e6a7edb1a3c9" />
+  <Project Path="task02tests/task02tests.csproj" Id="01af70ac-52b9-4d27-88c3-6c3b940343c4" />
+  <Project Path="task03/task03.csproj" Id="e80f5a05-ae5d-4bb1-84d4-806399b4f056" />
+  <Project Path="task03tests/task03tests.csproj" Id="1ff1d4ec-b5b6-4c96-b895-2c2cbd364fc8" />
+  <Project Path="task04/task04.csproj" Id="ded02c93-6052-409b-85f6-0522d99c8329" />
+  <Project Path="task04tests/task04tests.csproj" Id="2af137fc-596c-4e56-948e-76b011076020" />
+  <Project Path="task05/task05.csproj" Id="b785613c-9c39-4f2a-9be6-0d8d9120a9e8" />
+  <Project Path="task05tests/task05tests.csproj" Id="17c3443d-08fd-450e-96b9-8e198b5592aa" />
+  <Project Path="task07/task07.csproj" Id="012c2b85-3b89-41ab-b2c3-0b7a87cc4b6f" />
+  <Project Path="task07tests/task07tests.csproj" Id="70016424-4212-40f3-aaae-4d0c92211c6c" />
+  <Project Path="task08tests/task08tests.csproj" Id="3cef4061-f9dc-4707-bf84-3df2370c2957" />
+  <Project Path="task09/task09.csproj" Id="8c0a2cc2-5566-45d4-9377-9184bc13bde5" />
+  <Project Path="task10/task10.csproj" Id="1f7bd38e-0591-4477-a52c-0c4c0ad48c02" />
+</Solution>
