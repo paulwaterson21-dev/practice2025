@@ -1,5 +1,4 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 using task11;
 
 namespace task11tests
@@ -13,10 +12,10 @@ namespace task11tests
         {
             public class RuntimeCalculator : ICalculator
             {
-                public int Add(int a, int b) => a + b;
-                public int Minus(int a, int b) => a - b;
-                public int Mul(int a, int b) => a * b;
-                public int Div(int a, int b) => a / b;
+                public double Add(double a, double b) => a + b;
+                public double Minus(double a, double b) => a - b;
+                public double Mul(double a, double b) => a * b;
+                public double Div(double a, double b) => a / b;
             }
         }";
 
