@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+namespace task03
+{ 
 public class CustomCollection<T> : IEnumerable<T>
 {
     private readonly List<T> _items;
@@ -35,4 +36,5 @@ public class CustomCollection<T> : IEnumerable<T>
             yield return _items[i];
         }
     }
+}
 }
