@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -21,15 +22,25 @@ namespace task11
                 throw new ArgumentNullException(nameof(sourceCode));
 
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
-
             string assemblyName = Path.GetRandomFileName();
 
-            MetadataReference[] references = new MetadataReference[]
+
+            var references = new List<MetadataReference>
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(ICalculator).Assembly.Location),
-                MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location)
+                MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
+                MetadataReference.CreateFromFile(Assembly.Load("System.Collections").Location)
             };
+
+
+            var coreDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            if (coreDir != null)
+            {
+                var netStandard = Path.Combine(coreDir, "netstandard.dll");
+                if (File.Exists(netStandard))
+                    references.Add(MetadataReference.CreateFromFile(netStandard));
+            }
 
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName,
@@ -43,14 +54,13 @@ namespace task11
 
                 if (!result.Success)
                 {
-                    var failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
-                    string errors = string.Join(Environment.NewLine, failures.Select(f => $"{f.Id}: {f.GetMessage()}"));
-                    throw new InvalidOperationException($"Ошибка компиляции кода калькулятора:{Environment.NewLine}{errors}");
+                    var errors = string.Join(Environment.NewLine, result.Diagnostics
+                        .Where(d => d.Severity == DiagnosticSeverity.Error)
+                        .Select(d => $"{d.Id}: {d.GetMessage()}"));
+                    throw new InvalidOperationException($"Ошибка компиляции: {errors}");
                 }
 
-                ms.Seek(0, SeekOrigin.Begin);
+                ms.Position = 0;
                 Assembly assembly = Assembly.Load(ms.ToArray());
 
 
@@ -59,8 +69,7 @@ namespace task11
                 if (type == null)
                     throw new InvalidOperationException("В скомпилированном коде не найден класс, реализующий ICalculator!");
 
-                object instance = Activator.CreateInstance(type);
-                return instance as ICalculator;
+                return (ICalculator)Activator.CreateInstance(type);
             }
         }
     }
@@ -90,12 +99,7 @@ namespace task11
             try
             {
                 ICalculator calc = RuntimeCompiler.CreateCalculator(calculatorSource);
-
-                Console.WriteLine("Калькулятор успешно скомпилирован в рантайме!");
-                Console.WriteLine($"Тест Add(5, 3): {calc.Add(5, 3)}");
-                Console.WriteLine($"Тест Minus(5, 3): {calc.Minus(5, 3)}");
-                Console.WriteLine($"Тест Mul(5, 3): {calc.Mul(5, 3)}");
-                Console.WriteLine($"Тест Div(6, 2): {calc.Div(6, 2)}");
+                Console.WriteLine($"Тест Add: {calc.Add(5, 3)}");
             }
             catch (Exception ex)
             {
