@@ -18,20 +18,23 @@ namespace task11
 
         public static ICalculator CompileCalculatorSource(string sourceCode)
         {
-            if (string.IsNullOrEmpty(sourceCode))
-                throw new ArgumentNullException(nameof(sourceCode));
+            if (string.IsNullOrWhiteSpace(sourceCode))
+                throw new ArgumentException("Код не может быть пустым", nameof(sourceCode));
 
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
             string assemblyName = Path.GetRandomFileName();
 
+  
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var references = new List<MetadataReference>();
 
-            var references = new List<MetadataReference>
+            foreach (var assembly in assemblies)
             {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(ICalculator).Assembly.Location),
-                MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
-                MetadataReference.CreateFromFile(Assembly.Load("System.Collections").Location)
-            };
+                if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location))
+                {
+                    references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                }
+            }
 
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName,
@@ -48,17 +51,18 @@ namespace task11
                     var errors = string.Join(Environment.NewLine, result.Diagnostics
                         .Where(d => d.Severity == DiagnosticSeverity.Error)
                         .Select(d => $"{d.Id}: {d.GetMessage()}"));
-                    throw new InvalidOperationException($"Ошибка компиляции: {errors}");
+                    throw new InvalidOperationException($"Критическая ошибка компиляции: {errors}");
                 }
 
                 ms.Position = 0;
                 Assembly assembly = Assembly.Load(ms.ToArray());
 
 
-                Type type = assembly.GetTypes().FirstOrDefault(t => typeof(ICalculator).IsAssignableFrom(t) && !t.IsInterface);
+                Type type = assembly.GetTypes()
+                    .FirstOrDefault(t => typeof(ICalculator).IsAssignableFrom(t) && !t.IsInterface);
 
                 if (type == null)
-                    throw new InvalidOperationException("Класс, реализующий ICalculator, не найден!");
+                    throw new InvalidOperationException("Класс, реализующий ICalculator, не найден в сгенерированной сборке.");
 
                 return (ICalculator)Activator.CreateInstance(type);
             }
