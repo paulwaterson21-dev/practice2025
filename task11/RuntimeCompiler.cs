@@ -10,12 +10,10 @@ namespace task11
 {
     public class RuntimeCompiler
     {
-
         public static ICalculator CreateCalculator(string sourceCode)
         {
             return CompileCalculatorSource(sourceCode);
         }
-
 
         public static ICalculator CompileCalculatorSource(string sourceCode)
         {
@@ -55,9 +53,11 @@ namespace task11
                 ms.Seek(0, SeekOrigin.Begin);
                 Assembly assembly = Assembly.Load(ms.ToArray());
 
-                Type type = assembly.GetType("task11.Calculator");
+
+                Type type = assembly.GetTypes().FirstOrDefault(t => typeof(ICalculator).IsAssignableFrom(t) && !t.IsInterface);
+
                 if (type == null)
-                    throw new InvalidOperationException("В скомпилированном коде не найден класс task11.Calculator!");
+                    throw new InvalidOperationException("В скомпилированном коде не найден класс, реализующий ICalculator!");
 
                 object instance = Activator.CreateInstance(type);
                 return instance as ICalculator;
@@ -89,7 +89,6 @@ namespace task11
 
             try
             {
-
                 ICalculator calc = RuntimeCompiler.CreateCalculator(calculatorSource);
 
                 Console.WriteLine("Калькулятор успешно скомпилирован в рантайме!");
