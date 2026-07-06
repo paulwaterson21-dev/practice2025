@@ -1,137 +1,137 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace task10
 {
-    internal class Program
+
+    public interface IPlugin
     {
-        private static void Main(string[] args)
+        void Execute();
+    }
+
+
+    [PluginLoad("PluginA", "PluginB")]
+    public class PluginA : IPlugin
+    {
+        public void Execute()
         {
-          
-            string pluginsDir = AppDomain.CurrentDomain.BaseDirectory;
-            Console.WriteLine($"Сканирование директории плагинов: {pluginsDir}\n");
 
-            if (!Directory.Exists(pluginsDir))
-            {
-                Console.WriteLine("Директория не найдена.");
-                return;
-            }
-
-            var pluginTypes= new List<(Type Type, PluginLoadAttribute Attr)>();
-
-
-            string[] dllFiles = Directory.GetFiles(pluginsDir, "*.dll");
-            foreach (string dll in dllFiles)
-            {
-                try
-                {
-                    Assembly assembly = Assembly.LoadFrom(dll);
-                    foreach (Type type in assembly.GetTypes())
-                    {
-                        var attr = type.GetCustomAttribute<PluginLoadAttribute>();
-                        if (attr != null && type.IsClass)
-                        {
-                            pluginTypes.Add((type, attr));
-                        }
-                    }
-                }
-                catch
-                {
-       
-                }
-            }
-
-            if (pluginTypes.Count == 0)
-            {
-                Console.WriteLine("Плагины с атрибутом [PluginLoad] не обнаружены.");
-                return;
-            }
-
-          
-            try
-            {
-                var sortedPlugins = TopologicallySortPlugins(pluginTypes);
-
-                Console.WriteLine("Порядок загрузки плагинов с учетом зависимостей:");
-                foreach (var plugin in sortedPlugins)
-                {
-                    Console.WriteLine($"  -> {plugin.Attr.PluginName}");
-                }
-                Console.WriteLine("\nЗапуск выполнения плагинов:");
-                Console.WriteLine(new string('-', 40));
-
-            
-                foreach (var plugin in sortedPlugins)
-                {
-                    try
-                    {
-                        object pluginInstance = Activator.CreateInstance(plugin.Type);
-                        MethodInfo executeMethod = plugin.Type.GetMethod("Execute");
-
-                        if (executeMethod != null)
-                        {
-                            Console.WriteLine($"[Запуск] {plugin.Attr.PluginName}...");
-                            executeMethod.Invoke(pluginInstance, null);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"[Ошибка] У плагина {plugin.Attr.PluginName} отсутствует метод Execute.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[Ошибка] Не удалось запуститт плагин {plugin.Attr.PluginName}: {ex.Message}");
-                    }
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine($"[Ошибка графа зависимостей] {ex.Message}");
-            }
         }
+    }
 
-        private static List<(Type Type, PluginLoadAttribute Attr)> TopologicallySortPlugins(List<(Type Type, PluginLoadAttribute Attr)> plugins)
+    [PluginLoad("PluginB")]
+    public class PluginB : IPlugin
+    {
+        public void Execute()
         {
-            var result = new List<(Type Type, PluginLoadAttribute Attr)>();
-            var visited = new Dictionary<string, bool>(); 
-            var pluginMap = plugins.ToDictionary(p => p.Attr.PluginName, p => p);
 
-            void Visit(string name)
-            {
-                if (!pluginMap.ContainsKey(name)) return;
+        }
+    }
 
-                if (visited.TryGetValue(name, out bool isTested))
-                {
-                    if (!isTested)
-                    {
-                        throw new InvalidOperationException($"Обнаружена циклическач зависимость в плагине: {name}");
-                    }
-                    return;
-                }
+    public class PluginManager
+    {
+        public void LoadAndExecutePlugins(List<IPlugin> plugins)
+        {
+            if (plugins == null) throw new ArgumentNullException(nameof(plugins));
 
-                visited[name] =false; 
-
-                foreach (var dependency in pluginMap[name].Attr.Dependencies)
-                {
-                    Visit(dependency);
-                }
-
-                visited[name] = true; 
-                result.Add(pluginMap[name]);
-            }
+            var adjacencyList = new Dictionary<string, List<string>>();
+            var pluginDict = new Dictionary<string, IPlugin>();
 
             foreach (var plugin in plugins)
             {
-                if (!visited.ContainsKey(plugin.Attr.PluginName))
+                var type = plugin.GetType();
+                var attr = (PluginLoadAttribute)Attribute.GetCustomAttribute(type, typeof(PluginLoadAttribute));
+
+                if (attr == null) continue;
+
+                string pluginName = attr.PluginName;
+                string[] deps = attr.Dependencies ?? Array.Empty<string>();
+
+                pluginDict[pluginName] = plugin;
+                adjacencyList[pluginName] = new List<string>(deps);
+            }
+
+            var visited = new Dictionary<string, byte>();
+            var sortedPluginNames = new List<string>();
+
+            foreach (var name in pluginDict.Keys)
+            {
+                visited[name] = 0;
+            }
+
+            try
+            {
+                foreach (var name in pluginDict.Keys)
                 {
-                    Visit(plugin.Attr.PluginName);
+                    if (visited[name]==0)
+                    {
+                        DepthFirstSearch(name, adjacencyList, visited, sortedPluginNames, pluginDict);
+                    }
+                }
+
+
+                Console.WriteLine("--- Порядок запуска плагинов согласно графу зависимостей ---");
+                foreach (var name in sortedPluginNames)
+                {
+                    if (pluginDict.ContainsKey(name))
+                    {
+                        try
+                        {
+                            Console.WriteLine($"Запуск плагина: {name}");
+                            pluginDict[name].Execute();
+                            Console.WriteLine($"Плагин {name} успешно завершил работу.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка при работе плагина {name}: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка загрузки плагинов: {ex.Message}");
+            }
+        }
+
+        private void DepthFirstSearch(string node, Dictionary<string, List<string>> graph, Dictionary<string, byte> visited, List<string> sorted, Dictionary<string, IPlugin> pluginDict)
+        {
+            visited[node] = 1;
+
+            if (graph.ContainsKey(node))
+            {
+                foreach (var neighbor in graph[node])
+                {
+                    if (!pluginDict.ContainsKey(neighbor))
+                    {
+                        throw new InvalidOperationException($"Ошибка: Плагин '{node}' зависит от отсутствующего плагина '{neighbor}'.");
+                    }
+
+                    if (visited[neighbor] ==1)
+                    {
+                        throw new InvalidOperationException($"Обнаружена циклическая зависимость между '{node}' и '{neighbor}'!");
+                    }
+
+                    if (visited[neighbor] == 0)
+                    {
+                        DepthFirstSearch(neighbor, graph, visited, sorted, pluginDict);
+                    }
                 }
             }
 
-            return result;
+            visited[node] = 2;
+            sorted.Add(node);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var plugins = new List<IPlugin> { new PluginA(), new PluginB() };
+            var manager = new PluginManager();
+            manager.LoadAndExecutePlugins(plugins);
         }
     }
 }
