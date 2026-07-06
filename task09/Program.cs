@@ -1,94 +1,67 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace task09
 {
-    internal class Program
+    public class ClassAnalyzer
     {
-        private static void Main(string[] args)
+        public string AnalyzeAssembly(string assemblyPath)
         {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("ошибка: укажите путь к файлу .dll в параметрах командной строки");
-                return;
-            }
+            if (string.IsNullOrEmpty(assemblyPath))
+                throw new ArgumentNullException(nameof(assemblyPath), "Путь к сборке не может быть пустым.");
 
-            string assemblyPath = args[0];
-
-            if (!File.Exists(assemblyPath))
-            {
-                Console.WriteLine($"ошибка: файл не найден по пути '{assemblyPath}'");
-                return;
-            }
+            StringBuilder sb = new StringBuilder();
 
             try
             {
+
                 Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                Console.WriteLine($"АНАЛИЗ СБОРКИ: {assembly.GetName().Name}");
+
 
                 Type[] types = assembly.GetTypes();
 
                 foreach (Type type in types)
                 {
-                    if (!type.IsClass) continue;
+                    sb.AppendLine($"Класс: {type.FullName}");
 
-                    Console.WriteLine($"Класс: {type.FullName}");
 
-                    var attributes = type.GetCustomAttributes(false);
-                    if (attributes.Length > 0)
-                    {
-                        Console.WriteLine("  Атрибуты класса:");
-                        foreach (var attr in attributes)
-                        {
-                            Console.WriteLine($"    - [{attr.GetType().Name}]");
-                        }
-                    }
+                    BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
+                                         BindingFlags.Instance | BindingFlags.Static;
 
-                    ConstructorInfo[] constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-                    Console.WriteLine("  Конструкторы:");
+
+                    var constructors = type.GetConstructors(flags);
+                    sb.AppendLine("  Конструкторы:");
                     foreach (var ctor in constructors)
                     {
-                        Console.Write($"    - {type.Name}(");
-                        ParameterInfo[] parameters =ctor.GetParameters();
-                        for (int i = 0; i < parameters.Length; i++)
-                        {
-                            Console.Write($"{parameters[i].ParameterType.Name} {parameters[i].Name}");
-                            if (i < parameters.Length - 1) Console.Write(", ");
-                        }
-                        Console.WriteLine(")");
+                        sb.AppendLine($"    - {ctor.Name}");
                     }
 
-                    MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
-                    Console.WriteLine("  Методы:");
+                    var methods = type.GetMethods(flags);
+                    sb.AppendLine("  Методы:");
                     foreach (var method in methods)
                     {
-                        Console.Write($"    - {method.ReturnType.Name} {method.Name}(");
-                        ParameterInfo[] parameters = method.GetParameters();
-                        for (int i = 0;i < parameters.Length;i++)
-                        {
-                            Console.Write($"{parameters[i].ParameterType.Name} {parameters[i].Name}");
-                            if (i < parameters.Length - 1) Console.Write(", ");
-                        }
-                        Console.WriteLine(")");
+                        var paramsInfo = method.GetParameters();
 
-                        var methodAttrs =method.GetCustomAttributes(false);
-                        if (methodAttrs.Length > 0)
-                        {
-                            foreach (var attr in methodAttrs)
-                            {
-                                Console.WriteLine($"        * Атрибут метода: [{attr.GetType().Name}]");
-                            }
-                        }
+                        string paramString = string.Join(", ", Array.ConvertAll(paramsInfo, p => $"{p.ParameterType.Name} {p.Name}"));
+                        sb.AppendLine($"    - {method.ReturnType.Name} {method.Name}({paramString})");
                     }
-
-                    Console.WriteLine(new string('-', 50));
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Произошла ошибка при анализе сборки: {ex.Message}");
+                sb.AppendLine($"Ошибка при анализе DLL: {ex.Message}");
             }
+
+            return sb.ToString();
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Рефлексивный анализатор готов к работе.");
         }
     }
 }
