@@ -2,9 +2,9 @@
 {
     public interface ICalculator
     {
-        int Add(int a, int b);
-        int Minus(int a, int b);
-        int Mul(int a, int b);
-        int Div(int a, int b);
+        double Add(double a, double b);
+        double Minus(double a, double b);
+        double Mul(double a, double b);
+        double Div(double a, double b);
     }
 }

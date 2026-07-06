@@ -1,54 +1,106 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace task11
 {
-    public static class RuntimeCompiler
+    public class RuntimeCompiler
     {
-        public static ICalculator CreateCalculator(string code)
+        public ICalculator CompileCalculatorSource(string sourceCode)
         {
-            var syntaxTree=CSharpSyntaxTree.ParseText(code);
+            if (string.IsNullOrEmpty(sourceCode))
+                throw new ArgumentNullException(nameof(sourceCode));
 
-            var assemblyPath=Path.GetDirectoryName(typeof(object).Assembly.Location);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
 
-            var references=new MetadataReference[]
+            string assemblyName = Path.GetRandomFileName();
+
+
+            MetadataReference[] references = new MetadataReference[]
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")),
-                MetadataReference.CreateFromFile(typeof(ICalculator).Assembly.Location)
+                MetadataReference.CreateFromFile(typeof(ICalculator).Assembly.Location),
+                MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location)
             };
 
-            var compilation = CSharpCompilation.Create(
-                "DynamicCalculatorAssembly_" + Guid.NewGuid().ToString("N"),
-                new[] { syntaxTree },
-                references,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            );
+
+            CSharpCompilation compilation =CSharpCompilation.Create(
+                assemblyName,
+                syntaxTrees: new[] { syntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
             using (var ms = new MemoryStream())
             {
-                var result = compilation.Emit(ms);
+
+                EmitResult result = compilation.Emit(ms);
 
                 if (!result.Success)
                 {
                     var failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
-
-                    throw new InvalidOperationException("Ошибка компиляции: " + string.Join("\n", failures.Select(f => f.GetMessage())));
+                        diagnostic.IsWarningAsError ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
+                    string errors = string.Join(Environment.NewLine, failures.Select(f => $"{f.Id}: {f.GetMessage()}"));
+                    throw new InvalidOperationException($"Ошибка компиляции кода калькулятора:{Environment.NewLine}{errors}");
                 }
 
+
                 ms.Seek(0, SeekOrigin.Begin);
-                var assembly = Assembly.Load(ms.ToArray());
+                Assembly assembly = Assembly.Load(ms.ToArray());
 
-                var type = assembly.GetType("task11.RuntimeCalculator");
-                if (type ==null) throw new TypeLoadException("Класс task11.RuntimeCalculator не найден в скомпилированной сборке.");
 
-                return (ICalculator)Activator.CreateInstance(type);
+                Type type = assembly.GetType("task11.Calculator");
+                if (type == null)
+                    throw new InvalidOperationException("В скомпилированном коде не найден класс task11.Calculator!");
+
+
+                object instance=Activator.CreateInstance(type);
+                return instance as ICalculator;
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            string calculatorSource = @"
+            using System;
+
+            namespace task11
+            {
+                public class Calculator : ICalculator
+                {
+                    public double Add(double a, double b) => a + b;
+                    public double Minus(double a, double b) => a - b;
+                    public double Mul(double a, double b) => a * b;
+                    public double Div(double a, double b) 
+                    {
+                        if (b == 0) throw new DivideByZeroException('Деление на ноль невозможно.');
+                        return a / b;
+                    }
+                }
+            }";
+
+            try
+            {
+                RuntimeCompiler compiler = new RuntimeCompiler();
+                ICalculator calc = compiler.CompileCalculatorSource(calculatorSource);
+
+                Console.WriteLine("Калькулятор успешно скомпилирован в рантайме!");
+                Console.WriteLine($"Тест Add(5, 3): {calc.Add(5, 3)}");
+                Console.WriteLine($"Тест Minus(5, 3): {calc.Minus(5, 3)}");
+                Console.WriteLine($"Тест Mul(5, 3): {calc.Mul(5, 3)}");
+                Console.WriteLine($"Тест Div(6, 2): {calc.Div(6, 2)}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }
