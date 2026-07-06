@@ -1,4 +1,5 @@
 <Solution>
+
   <Project Path="CommandRunner/CommandRunner.csproj" Id="5fd4ed91-ed9d-4967-857f-13362c06d51a" />
   <Project Path="FileSystemCommands/task08.csproj" Id="9578b7b4-a00c-4e10-ad9e-a6468b64e3f9" />
   <Project Path="task02/task02.csproj" Id="19b0525f-4c9e-4bd3-bfc8-e6a7edb1a3c9" />
@@ -16,4 +17,8 @@
   <Project Path="task10/task10.csproj" Id="1f7bd38e-0591-4477-a52c-0c4c0ad48c02" />
   <Project Path="task11/task11.csproj" Id="53b29f13-9e06-409c-8fac-1a80c3b2db66" />
   <Project Path="task11tests/task11tests.csproj" Id="e112e007-af36-4b3d-91bb-925e8308edf8" />
+
+  <Project Path="task01/task01.csproj" />
+  <Project Path="task01tests/task01tests.csproj" />
+
 </Solution>
