@@ -33,15 +33,6 @@ namespace task11
                 MetadataReference.CreateFromFile(Assembly.Load("System.Collections").Location)
             };
 
-
-            var coreDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
-            if (coreDir != null)
-            {
-                var netStandard = Path.Combine(coreDir, "netstandard.dll");
-                if (File.Exists(netStandard))
-                    references.Add(MetadataReference.CreateFromFile(netStandard));
-            }
-
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName,
                 syntaxTrees: new[] { syntaxTree },
@@ -67,43 +58,9 @@ namespace task11
                 Type type = assembly.GetTypes().FirstOrDefault(t => typeof(ICalculator).IsAssignableFrom(t) && !t.IsInterface);
 
                 if (type == null)
-                    throw new InvalidOperationException("В скомпилированном коде не найден класс, реализующий ICalculator!");
+                    throw new InvalidOperationException("Класс, реализующий ICalculator, не найден!");
 
                 return (ICalculator)Activator.CreateInstance(type);
-            }
-        }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            string calculatorSource = @"
-            using System;
-
-            namespace task11
-            {
-                public class Calculator : ICalculator
-                {
-                    public double Add(double a, double b) => a + b;
-                    public double Minus(double a, double b) => a - b;
-                    public double Mul(double a, double b) => a * b;
-                    public double Div(double a, double b) 
-                    {
-                        if (b == 0) throw new DivideByZeroException(""Деление на ноль невозможно."");
-                        return a / b;
-                    }
-                }
-            }";
-
-            try
-            {
-                ICalculator calc = RuntimeCompiler.CreateCalculator(calculatorSource);
-                Console.WriteLine($"Тест Add: {calc.Add(5, 3)}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
         }
     }
