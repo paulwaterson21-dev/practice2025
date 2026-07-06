@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace task03
 {
     public class CustomCollection<T> : IEnumerable<T>
     {
         private readonly List<T> _items;
-
 
         public CustomCollection()
         {
@@ -20,14 +20,23 @@ namespace task03
             {
                 throw new ArgumentNullException(nameof(source), "Входная коллекция не может быть null.");
             }
-
             _items = new List<T>(source);
         }
-
 
         public void Add(T item)
         {
             _items.Add(item);
+        }
+
+        public static IEnumerable<int> GenerateSequence(int start, int count)
+        {
+            return Enumerable.Range(start, count);
+        }
+
+
+        public IEnumerable<T> FilterAndSort<TKey>(Func<T, bool> predicate, Func<T, TKey> keySelector)
+        {
+            return _items.Where(predicate).OrderBy(keySelector);
         }
 
         public IEnumerator<T> GetEnumerator()
