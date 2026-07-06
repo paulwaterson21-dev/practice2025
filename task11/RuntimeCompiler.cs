@@ -10,7 +10,14 @@ namespace task11
 {
     public class RuntimeCompiler
     {
-        public ICalculator CompileCalculatorSource(string sourceCode)
+
+        public static ICalculator CreateCalculator(string sourceCode)
+        {
+            return CompileCalculatorSource(sourceCode);
+        }
+
+
+        public static ICalculator CompileCalculatorSource(string sourceCode)
         {
             if (string.IsNullOrEmpty(sourceCode))
                 throw new ArgumentNullException(nameof(sourceCode));
@@ -19,7 +26,6 @@ namespace task11
 
             string assemblyName = Path.GetRandomFileName();
 
-
             MetadataReference[] references = new MetadataReference[]
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
@@ -27,8 +33,7 @@ namespace task11
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location)
             };
 
-
-            CSharpCompilation compilation =CSharpCompilation.Create(
+            CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName,
                 syntaxTrees: new[] { syntaxTree },
                 references: references,
@@ -36,7 +41,6 @@ namespace task11
 
             using (var ms = new MemoryStream())
             {
-
                 EmitResult result = compilation.Emit(ms);
 
                 if (!result.Success)
@@ -48,17 +52,14 @@ namespace task11
                     throw new InvalidOperationException($"Ошибка компиляции кода калькулятора:{Environment.NewLine}{errors}");
                 }
 
-
                 ms.Seek(0, SeekOrigin.Begin);
                 Assembly assembly = Assembly.Load(ms.ToArray());
-
 
                 Type type = assembly.GetType("task11.Calculator");
                 if (type == null)
                     throw new InvalidOperationException("В скомпилированном коде не найден класс task11.Calculator!");
 
-
-                object instance=Activator.CreateInstance(type);
+                object instance = Activator.CreateInstance(type);
                 return instance as ICalculator;
             }
         }
@@ -68,7 +69,6 @@ namespace task11
     {
         static void Main(string[] args)
         {
-
             string calculatorSource = @"
             using System;
 
@@ -81,7 +81,7 @@ namespace task11
                     public double Mul(double a, double b) => a * b;
                     public double Div(double a, double b) 
                     {
-                        if (b == 0) throw new DivideByZeroException('Деление на ноль невозможно.');
+                        if (b == 0) throw new DivideByZeroException(""Деление на ноль невозможно."");
                         return a / b;
                     }
                 }
@@ -89,8 +89,8 @@ namespace task11
 
             try
             {
-                RuntimeCompiler compiler = new RuntimeCompiler();
-                ICalculator calc = compiler.CompileCalculatorSource(calculatorSource);
+
+                ICalculator calc = RuntimeCompiler.CreateCalculator(calculatorSource);
 
                 Console.WriteLine("Калькулятор успешно скомпилирован в рантайме!");
                 Console.WriteLine($"Тест Add(5, 3): {calc.Add(5, 3)}");
