@@ -1,4 +1,4 @@
-#r "nuget: ScottPlot, 5.0.39"
+
 
 using System;
 using System.Diagnostics;
