@@ -20,9 +20,7 @@
 
   <Project Path="task01/task01.csproj" />
   <Project Path="task01tests/task01tests.csproj" />
-<<<<<<< HEAD
-  <Project Path="task15/task15.csproj" />
-=======
 
->>>>>>> c7f58789396dd887283cffb254136ae46f2cfeea
+  <Project Path="task15/task15.csproj" />
+
 </Solution>
