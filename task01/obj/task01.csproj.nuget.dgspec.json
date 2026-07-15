@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj": {}
+    "D:\\Projects\\practice2026\\task01\\task01.csproj": {}
   },
   "projects": {
-    "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj": {
+    "D:\\Projects\\practice2026\\task01\\task01.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj",
+        "projectUniqueName": "D:\\Projects\\practice2026\\task01\\task01.csproj",
         "projectName": "task01",
-        "projectPath": "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj",
+        "projectPath": "D:\\Projects\\practice2026\\task01\\task01.csproj",
         "packagesPath": "C:\\Users\\Rory\\.nuget\\packages\\",
-        "outputPath": "D:\\Projects\\practice2025\\practice2025\\task01\\obj\\",
+        "outputPath": "D:\\Projects\\practice2026\\task01\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rory\\AppData\\Roaming\\NuGet\\NuGet.Config",

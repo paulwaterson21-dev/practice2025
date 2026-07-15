@@ -7,7 +7,7 @@ namespace task15
     {
         public static double InterlockedAddDouble(ref double location, double value)
         {
-            double newCurrentValue =location;
+            double newCurrentValue = location;
             while (true)
             {
                 double currentValue = newCurrentValue;
@@ -17,7 +17,6 @@ namespace task15
                     return newValue;
             }
         }
-
 
         public static double Solve(double a, double b, Func<double, double> function, double step, int threadsNumber)
         {
@@ -56,16 +55,15 @@ namespace task15
             return totalResult;
         }
 
-
         public static double SolveSingleThread(double a, double b, Func<double, double> function, double step)
         {
-            double sum=0.0;
+            double sum = 0.0;
             int stepsCount = (int)Math.Ceiling((b - a) / step);
             double localStep = (b - a) / stepsCount;
 
             for (int i = 0; i < stepsCount; i++)
             {
-                double x1 =a + i* localStep;
+                double x1 = a + i * localStep;
                 double x2 = a + (i + 1) * localStep;
                 sum += 0.5 * localStep * (function(x1) + function(x2));
             }

@@ -935,11 +935,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\practice2025\\practice2025\\task01tests\\task01tests.csproj",
+      "projectUniqueName": "D:\\Projects\\practice2026\\task01tests\\task01tests.csproj",
       "projectName": "task01tests",
-      "projectPath": "D:\\Projects\\practice2025\\practice2025\\task01tests\\task01tests.csproj",
+      "projectPath": "D:\\Projects\\practice2026\\task01tests\\task01tests.csproj",
       "packagesPath": "C:\\Users\\Rory\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\practice2025\\practice2025\\task01tests\\obj\\",
+      "outputPath": "D:\\Projects\\practice2026\\task01tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Rory\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -957,8 +957,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj": {
-              "projectPath": "D:\\Projects\\practice2025\\practice2025\\task01\\task01.csproj"
+            "D:\\Projects\\practice2026\\task01\\task01.csproj": {
+              "projectPath": "D:\\Projects\\practice2026\\task01\\task01.csproj"
             }
           }
         }
