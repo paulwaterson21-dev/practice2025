@@ -4,7 +4,7 @@ using task17;
 
 namespace task17tests;
 
-// Вспомогательная команда для тестов
+
 public class ActionCommand : ICommand
 {
     private readonly Action _action;

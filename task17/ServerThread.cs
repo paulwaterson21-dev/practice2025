@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace task17;
 
@@ -8,9 +10,8 @@ public class ServerThread
     private readonly Thread _thread;
     private Action _behavior;
 
-
     public Thread Thread => _thread;
-    public Action<ICommand, Exception>? ExceptionHandler {get; set;}
+    public Action<ICommand, Exception>? ExceptionHandler { get; set; }
 
     public ServerThread()
     {
@@ -32,15 +33,13 @@ public class ServerThread
             }
             catch (StopThreadException)
             {
-                break; 
+                break;
             }
         }
     }
 
-
     private void DefaultBehavior()
     {
-
         var cmd = _queue.Take();
         try
         {
@@ -52,12 +51,10 @@ public class ServerThread
         }
     }
 
-
     public void SoftStop()
     {
         _behavior = () =>
         {
-
             if (_queue.TryTake(out var cmd))
             {
                 try
@@ -71,16 +68,15 @@ public class ServerThread
             }
             else
             {
-                throw new StopThreadException(); 
-        };
+                throw new StopThreadException();
+            }
+        }; 
     }
-
 
     public void HardStop()
     {
         _behavior = () => throw new StopThreadException();
     }
 }
-
 
 public class StopThreadException : Exception { }
